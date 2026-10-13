@@ -24,7 +24,7 @@ jobs:
       - name: Compile installer
         shell: pwsh
         run: |
-          & 'C:\Program Files (x86)\NSIS\makensis.exe' "/DVST3_SOURCE=$env:VST3_SOURCE" installer\AFROGRID.nsi
+          & 'C:\Program Files (x86)\NSIS\makensis.exe' "/DVST3_SOURCE=$env:VST3_SOURCE" AFROGRID.nsi
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@v4
         with:

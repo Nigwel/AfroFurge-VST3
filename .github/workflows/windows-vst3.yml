@@ -12,11 +12,12 @@ jobs:
       - name: Configure
         run: cmake -S . -B build -G "Visual Studio 17 2022" -A x64
       - name: Compile Windows VST3
-        run: cmake --build build --config Release --target AFROGRID_VST3 --parallel 4
+        run: cmake --build build --config Release --target AFROLOGY_VST3 --parallel 4
       - name: Locate compiled VST3
         shell: pwsh
         run: |
-          $p = Get-ChildItem -Path build -Directory -Recurse -Filter 'AFROGRID.vst3' | Where-Object { $_.FullName -match 'Release' } | Select-Object -First 1
+          $p = Get-ChildItem -Path build -Directory -Recurse -Filter 'AfroLogy.vst3' | Where-Object { $_.FullName -match 'Release' } | Select-Object -First 1
+          if (-not $p) { $p = Get-ChildItem -Path build -Directory -Recurse -Filter 'AFROLOGY.vst3' | Where-Object { $_.FullName -match 'Release' } | Select-Object -First 1 }
           if (-not $p) { throw 'VST3 bundle not found' }
           "VST3_SOURCE=$($p.FullName)" >> $env:GITHUB_ENV
       - name: Install NSIS
@@ -24,29 +25,30 @@ jobs:
       - name: Compile installer
         shell: pwsh
         run: |
-          & 'C:\Program Files (x86)\NSIS\makensis.exe' "/DVST3_SOURCE=$env:VST3_SOURCE" AFROGRID.nsi
+          & 'C:\Program Files (x86)\NSIS\makensis.exe' "/DVST3_SOURCE=$env:VST3_SOURCE" AFROLOGY.nsi
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Prepare plugin download
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Path package -Force | Out-Null
+          $vst3Name = (Split-Path $env:VST3_SOURCE -Leaf)
           Copy-Item -LiteralPath $env:VST3_SOURCE -Destination package -Recurse
-          @'
-          AFROGRID Windows x64 VST3 - manual installation
-          Extract this archive. Copy the whole AFROGRID.vst3 folder into:
+          @"
+          $vst3Name Windows x64 VST3 - manual installation
+          Extract this archive. Copy the whole $vst3Name folder into:
           C:\Program Files\Common Files\VST3
           Then rescan VST3 plugins in your DAW. Administrator permission may be required to copy there.
           This package contains no setup executable. The NSIS installer is withheld pending review of an AVG detection.
           Antivirus clearance and DAW compatibility have not been verified. Keep antivirus protection enabled.
           SHA256SUMS.txt records the packaged plugin files for integrity checking.
-          '@ | Set-Content package/INSTALL.txt -Encoding utf8
+          "@ | Set-Content package/INSTALL.txt -Encoding utf8
           $packageRoot = (Resolve-Path package).Path
-          Get-ChildItem package/AFROGRID.vst3 -File -Recurse | Sort-Object FullName | ForEach-Object {
+          Get-ChildItem "package/$vst3Name" -File -Recurse | Sort-Object FullName | ForEach-Object {
             $relative = $_.FullName.Substring($packageRoot.Length + 1).Replace('\', '/')
             "$( (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() )  $relative"
           } | Set-Content package/SHA256SUMS.txt -Encoding ascii
       - uses: actions/upload-artifact@v4
         with:
-          name: AFROGRID-Windows-x64-VST3-Manual-Install
+          name: AfroLogy-Windows-x64-VST3-Manual-Install
           path: package/
           if-no-files-found: error

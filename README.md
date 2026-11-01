@@ -1,4 +1,5 @@
-# AFROGRID Windows VST3 — development checkpoint 0.2
+# AfroLogy Windows VST3 — development checkpoint 0.2
+
 
 ## Status (2026-10-13)
 **Windows build recipe authored, NOT compiled on Windows, installer NOT produced or validated.** The local Linux machine has no Windows cross-compiler and cannot reach GitHub to fetch JUCE. The standalone DSP core has a Linux smoke test.
@@ -6,10 +7,10 @@
 ## Build on Windows (Visual Studio 2022 + CMake + Git + NSIS)
 1. Open this project in a GitHub repository and run **Actions → Windows VST3 build and installer → Run workflow**, or run locally:
 2. `cmake -S . -B build -G "Visual Studio 17 2022" -A x64`
-3. `cmake --build build --config Release --target AFROGRID_VST3`
-4. Find `AFROGRID.vst3` under `build/AFROGRID_artefacts/Release/VST3/`.
-5. Run `makensis /DVST3_SOURCE="<absolute path to AFROGRID.vst3>" installer\AFROGRID.nsi` from project root.
-6. Install the generated `AFROGRID_Setup_Windows_x64.exe`, then rescan VST3 plug-ins in Ableton Live 11 Standard.
+3. `cmake --build build --config Release --target AfroLogy_VST3`
+4. Find `AfroLogy.vst3` under `build/AfroLogy_artefacts/Release/VST3/`.
+5. Run `makensis /DVST3_SOURCE="<absolute path to AfroLogy.vst3>" installer\AfroLogy.nsi` from project root.
+6. Install the generated `AfroLogy_Setup_Windows_x64.exe`, then rescan VST3 plug-ins in Ableton Live 11 Standard.
 
 ## Actual current functionality
 - JUCE VST3 instrument shell, stereo generated audio, 110 BPM default, tempo range 98–115 BPM, level and enable parameters, generic UI, state persistence.
